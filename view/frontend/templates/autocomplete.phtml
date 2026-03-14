@@ -1,0 +1,133 @@
+<?php
+/** @var \Slova\Search\Block\Autocomplete $block */
+?>
+<?php if ($block->isEnabled()): ?>
+<div
+    x-data="slovaAutocomplete({
+        minChars: <?= (int)$block->getMinChars() ?>,
+        suggestUrl: '<?= $block->escapeJs($block->escapeUrl($block->getSuggestUrl())) ?>'
+    })"
+    x-init="init()"
+    @click.outside="close()"
+    class="relative"
+>
+    <input
+        id="search"
+        type="search"
+        name="q"
+        @input.debounce.300ms="onInput($event.target.value)"
+        @keydown.escape="close()"
+        autocomplete="off"
+        class="<?= $block->escapeHtmlAttr($block->getInputClass() ?: 'form-input w-full') ?>"
+        placeholder="<?= $block->escapeHtmlAttr(__('Search entire store here...')) ?>"
+        aria-autocomplete="list"
+        :aria-expanded="open"
+        aria-haspopup="listbox"
+    />
+
+    <div
+        x-show="open"
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="opacity-0 -translate-y-1"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-1"
+        role="listbox"
+        class="slova-autocomplete-dropdown absolute left-0 top-full w-full bg-white border border-gray-200 border-t-0 shadow-md z-[9999] max-h-[420px] overflow-y-auto"
+        style="display:none"
+    >
+        <template x-for="(item, index) in items" :key="index">
+            <a
+                :href="item.url"
+                role="option"
+                class="slova-autocomplete-item flex items-center gap-3 px-3 py-2 border-b border-gray-100 hover:bg-gray-50 no-underline text-current cursor-pointer"
+            >
+                <template x-if="item.thumbnail">
+                    <img
+                        :src="item.thumbnail"
+                        :alt="item.name"
+                        class="w-11 h-11 object-contain flex-shrink-0"
+                        loading="lazy"
+                    />
+                </template>
+
+                <div class="flex-1 min-w-0">
+                    <div
+                        x-text="item.name"
+                        class="slova-autocomplete-name font-semibold truncate"
+                    ></div>
+
+                    <template x-if="item.sku || item.price">
+                        <div class="flex gap-3 text-sm text-gray-500 mt-0.5">
+                            <template x-if="item.sku">
+                                <span x-text="'SKU: ' + item.sku" class="slova-autocomplete-sku"></span>
+                            </template>
+                            <template x-if="item.price">
+                                <span x-text="item.price" class="slova-autocomplete-price font-semibold"></span>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </a>
+        </template>
+    </div>
+</div>
+
+<script>
+function slovaAutocomplete(config) {
+    return {
+        minChars:   config.minChars   || 3,
+        suggestUrl: config.suggestUrl || '',
+        open:       false,
+        items:      [],
+        _query:     '',
+
+        init() {
+            // If the search input is rendered outside this component (theme-level),
+            // attach the listener to it directly.
+            const externalInput = document.getElementById('search');
+            if (externalInput && !this.$el.contains(externalInput)) {
+                let timer;
+                externalInput.addEventListener('input', (e) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => this.onInput(e.target.value), 300);
+                });
+                externalInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.close();
+                });
+            }
+        },
+
+        async onInput(value) {
+            const query = value.trim();
+            if (query.length < this.minChars) {
+                this.close();
+                return;
+            }
+            this._query = query;
+            try {
+                const res = await fetch(
+                    this.suggestUrl + '?q=' + encodeURIComponent(query),
+                    { headers: { 'X-Requested-With': 'XMLHttpRequest' } }
+                );
+                if (!res.ok) throw new Error('network');
+                const data = await res.json();
+                // discard stale responses
+                if (query === this._query) {
+                    this.items = Array.isArray(data) ? data : [];
+                    this.open  = this.items.length > 0;
+                }
+            } catch {
+                this.close();
+            }
+        },
+
+        close() {
+            this.open  = false;
+            this.items = [];
+        }
+    };
+}
+</script>
+<?php endif; ?>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <slova_search>
+            <general>
+                <enabled>1</enabled>
+            </general>
+            <autocomplete>
+                <min_chars>3</min_chars>
+                <max_results>10</max_results>
+                <show_thumbnail>1</show_thumbnail>
+                <show_price>1</show_price>
+                <show_sku>0</show_sku>
+            </autocomplete>
+            <opensearch>
+                <edge_ngram_min>2</edge_ngram_min>
+                <edge_ngram_max>20</edge_ngram_max>
+            </opensearch>
+        </slova_search>
+    </default>
+</config>

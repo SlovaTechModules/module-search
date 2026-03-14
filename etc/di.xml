@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--
+        Fallback temporar: Suggest controller folosește colecție directă de produse (LIKE pe name).
+        Când implementăm edge n-gram în OpenSearch, înlocuim CollectionFactory cu SearchInterface
+        și adăugăm un virtual type pentru SearchCriteriaBuilder cu requestName = quick_search_container.
+
+        Exemplu pentru viitor:
+        <virtualType name="Slova\Search\Search\SearchCriteriaBuilder"
+                     type="Magento\Framework\Api\Search\SearchCriteriaBuilder">
+            <arguments>
+                <argument name="requestName" xsi:type="string">quick_search_container</argument>
+            </arguments>
+        </virtualType>
+        <type name="Slova\Search\Controller\Ajax\Suggest">
+            <arguments>
+                <argument name="searchCriteriaBuilder" xsi:type="object">
+                    Slova\Search\Search\SearchCriteriaBuilder
+                </argument>
+            </arguments>
+        </type>
+    -->
+</config>
