@@ -9,12 +9,12 @@ Advanced, blazing-fast search autocomplete for Magento 2. Optimized exclusively 
 
 ## ✨ Features
 
-* **Blazing Fast Autocomplete** — Real-time, zero-lag suggestions as the customer types.
-* **Beyond Products (Custom Entities)** — The first search module designed to easily index and display custom entities (like **Authors**, **Collections**, or **Brands**) right alongside your products.
-* **Rich Visual Results** — Out-of-the-box support for product thumbnails, localized formatted prices (with currency), and SKUs.
-* **Smart OpenSearch Edge N-Gram** — Configurable min/max n-gram lengths for highly accurate prefix matching.
-* **Developer Friendly** — No Knockout.js. Just clean code as Hyvä intended.
-* **Per-Store Control** — Fully tuneable per website or store view directly from the admin panel.
+* ⚡ **Blazing Fast Autocomplete** — Real-time, zero-lag suggestions as the customer types.
+* 🔗 **Beyond Products (Custom Entities)** — The first search module designed to easily index and display custom entities (like **Authors**, **Collections**, or **Brands**) right alongside your products.
+* 🖼️ **Rich Visual Results** — Out-of-the-box support for product thumbnails, localized formatted prices (with currency), and SKUs.
+* 🧠 **Smart OpenSearch Edge N-Gram** — Configurable min/max n-gram lengths for highly accurate prefix matching.
+* 🛠️ **Developer Friendly** — No Knockout.js. Just clean code as Hyvä intended.
+* ⚙️ **Per-Store Control** — Fully tuneable per website or store view directly from the admin panel.
 
 ## ⚙️ Requirements
 
