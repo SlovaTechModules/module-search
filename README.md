@@ -65,4 +65,5 @@ Slova RO Checkout — The highest-converting One-Page Checkout optimized for the
 Follow the SlovaTechModules organization for official launch updates!
 
 📄 License
+
 MIT License - Free to use, modify, and distribute.
