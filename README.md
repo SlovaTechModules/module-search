@@ -1,4 +1,4 @@
-# Slova Search # Slova Search — Lightweight M2M Discovery for Magento 2 & Hyvä
+# Slova Search — Lightweight M2M Discovery for Magento 2 & Hyvä
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fb09cfa1-4b67-44b5-963e-3538e157096d" width="400" title="Slova Search Autocomplete">
