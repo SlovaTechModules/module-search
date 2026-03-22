@@ -1,5 +1,10 @@
 # Slova Search — Lightweight M2M Discovery for Magento 2 & Hyvä
 
+![Magento 2.4.7](https://img.shields.io/badge/Magento-2.4.7-orange)
+![Hyvä Native](https://img.shields.io/badge/Hyvä-Native%20Implementation-0aa)
+![OpenSearch](https://img.shields.io/badge/OpenSearch-Integrated-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fb09cfa1-4b67-44b5-963e-3538e157096d" width="400" title="Slova Search Autocomplete">
 </p>
