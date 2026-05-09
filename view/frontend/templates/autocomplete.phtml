@@ -1,31 +1,52 @@
 <?php
-/** @var \Slova\Search\Block\Autocomplete $block */
+/** @var \Slova\Discovery\Block\Autocomplete $block */
+$inputId        = 'search';
+$btnId          = 'slova-search-btn';
+$autocompleteId = 'search_autocomplete';
 ?>
 <?php if ($block->isEnabled()): ?>
 <div
     x-data="slovaAutocomplete({
         minChars: <?= (int)$block->getMinChars() ?>,
-        suggestUrl: '<?= $block->escapeJs($block->escapeUrl($block->getSuggestUrl())) ?>'
+        suggestUrl: '<?= $escaper->escapeJs($escaper->escapeUrl($block->getSuggestUrl())) ?>',
+        inputId: '<?= $escaper->escapeJs($inputId) ?>'
     })"
     x-init="init()"
     @click.outside="close()"
-    class="relative"
+    style="position:relative;"
 >
-    <input
-        id="search"
-        type="search"
-        name="q"
-        @input.debounce.300ms="onInput($event.target.value)"
-        @keydown.escape="close()"
-        autocomplete="off"
-        class="<?= $block->escapeHtmlAttr($block->getInputClass() ?: 'form-input w-full') ?>"
-        placeholder="<?= $block->escapeHtmlAttr(__('Search entire store here...')) ?>"
-        aria-autocomplete="list"
-        :aria-expanded="open"
-        aria-haspopup="listbox"
-    />
+    <form action="/catalogsearch/result/" method="get" style="position:relative; display:block;">
+        <input
+            id="<?= $escaper->escapeHtmlAttr($inputId) ?>"
+            type="search"
+            name="q"
+            @input.debounce.300ms="onInput($event.target.value)"
+            @keydown.escape="close()"
+            autocomplete="off"
+            style="width:100%; background:#1e3333; border:1px solid #1e3333; color:#ccecec; border-radius:9999px; padding:0 3rem 0 1.5rem; height:44px; font-size:14px; outline:none;"
+            onfocus="this.style.borderColor='#009999'"
+            onblur="this.style.borderColor='#1e3333'"
+            placeholder="<?= $escaper->escapeHtmlAttr(__('Caută cărți, autori, colecții...')) ?>"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-haspopup="listbox"
+            aria-controls="<?= $escaper->escapeHtmlAttr($autocompleteId) ?>"
+            :aria-expanded="open"
+        />
+        <button
+            id="<?= $escaper->escapeHtmlAttr($btnId) ?>"
+            type="submit"
+            style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:transparent; border:none; cursor:pointer; color:#009999; padding:4px; display:flex; align-items:center;"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Caută')) ?>"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" style="width:1.125rem; height:1.125rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/>
+            </svg>
+        </button>
+    </form>
 
     <div
+        id="<?= $escaper->escapeHtmlAttr($autocompleteId) ?>"
         x-show="open"
         x-transition:enter="transition ease-out duration-100"
         x-transition:enter-start="opacity-0 -translate-y-1"
@@ -34,40 +55,84 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-1"
         role="listbox"
-        class="slova-autocomplete-dropdown absolute left-0 top-full w-full bg-white border border-gray-200 border-t-0 shadow-md z-[9999] max-h-[420px] overflow-y-auto"
-        style="display:none"
+        style="display:none; position:absolute; left:0; top:100%; width:100%; background:#fff; border:1px solid #e5e7eb; border-top:0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); z-index:9999; max-height:420px; overflow-y:auto;"
     >
-        <template x-for="(item, index) in items" :key="index">
+        <!-- Edituri -->
+        <template x-if="data.publishers && data.publishers.length">
+            <div style="padding:0.5rem 0.75rem; border-bottom:1px solid #f3f4f6; position:relative;">
+                <div style="display:flex; align-items:center; gap:0.5rem; overflow-x:auto; flex-wrap:nowrap; scrollbar-width:none; padding-right:28px;">
+                    <span style="color:#006666; font-weight:600; font-size:12px; flex-shrink:0;">Edituri:</span>
+                    <template x-for="(publisher, pi) in data.publishers" :key="pi">
+                        <a
+                            :href="'/catalogsearch/result/?q=' + encodeURIComponent(publisher) + '&brand[]=' + encodeURIComponent(publisher)"
+                            x-text="publisher"
+                            style="display:inline-block; border:1px solid #009999; color:#009999; border-radius:9999px; font-size:12px; padding:2px 10px; text-decoration:none; white-space:nowrap;"
+                            onmouseover="this.style.background='#e6f7f7'"
+                            onmouseout="this.style.background=''"
+                        ></a>
+                    </template>
+                </div>
+                <div style="position:absolute; right:0.75rem; top:0; width:40px; height:100%; background:linear-gradient(to right, transparent, white); pointer-events:none;"></div>
+            </div>
+        </template>
+
+        <!-- Categorii -->
+        <template x-if="data.categories && data.categories.length">
+            <div style="padding:0.5rem 0.75rem; border-bottom:1px solid #f3f4f6; position:relative;">
+                <div style="display:flex; align-items:center; gap:0.5rem; overflow-x:auto; flex-wrap:nowrap; scrollbar-width:none; padding-right:28px;">
+                    <span style="color:#006666; font-weight:600; font-size:12px; flex-shrink:0;">Categorii:</span>
+                    <template x-for="(cat, ci) in data.categories" :key="ci">
+                        <span style="white-space:nowrap;">
+                            <a
+                                :href="cat.url"
+                                x-text="cat.name"
+                                style="color:#374151; text-decoration:none; font-size:13px;"
+                                onmouseover="this.style.color='#009999'"
+                                onmouseout="this.style.color='#374151'"
+                            ></a><span x-show="ci < data.categories.length - 1" style="color:#006666; margin:0 6px;">|</span>
+                        </span>
+                    </template>
+                </div>
+                <div style="position:absolute; right:0.75rem; top:0; width:40px; height:100%; background:linear-gradient(to right, transparent, white); pointer-events:none;"></div>
+            </div>
+        </template>
+
+        <!-- Produse -->
+        <template x-for="(item, index) in data.products" :key="index">
             <a
                 :href="item.url"
                 role="option"
-                class="slova-autocomplete-item flex items-center gap-3 px-3 py-2 border-b border-gray-100 hover:bg-gray-50 no-underline text-current cursor-pointer"
+                style="display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0.75rem; border-bottom:1px solid #f3f4f6; text-decoration:none; color:inherit; cursor:pointer;"
+                onmouseover="this.style.background='#f9fafb'"
+                onmouseout="this.style.background=''"
             >
                 <template x-if="item.thumbnail">
                     <img
                         :src="item.thumbnail"
                         :alt="item.name"
-                        class="w-11 h-11 object-contain flex-shrink-0"
+                        style="width:44px; height:44px; object-fit:contain; flex-shrink:0;"
                         loading="lazy"
                     />
                 </template>
 
-                <div class="flex-1 min-w-0">
+                <div style="flex:1; min-width:0;">
                     <div
                         x-text="item.name"
-                        class="slova-autocomplete-name font-semibold truncate"
+                        style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                     ></div>
 
-                    <template x-if="item.sku || item.price">
-                        <div class="flex gap-3 text-sm text-gray-500 mt-0.5">
-                            <template x-if="item.sku">
-                                <span x-text="'SKU: ' + item.sku" class="slova-autocomplete-sku"></span>
-                            </template>
-                            <template x-if="item.price">
-                                <span x-text="item.price" class="slova-autocomplete-price font-semibold"></span>
-                            </template>
-                        </div>
+                    <template x-if="item.authors">
+                        <div x-text="item.authors" style="font-size:12px; color:#6b7280; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
                     </template>
+
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                        <template x-if="item.regular_price && item.regular_price > item.price">
+                            <span x-text="item.regular_price.toFixed(2) + ' RON'" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
+                        </template>
+                        <template x-if="item.price">
+                            <span x-text="item.price.toFixed(2) + ' RON'" style="font-size:13px; font-weight:600; color:#009999;"></span>
+                        </template>
+                    </div>
                 </div>
             </a>
         </template>
@@ -80,13 +145,41 @@ function slovaAutocomplete(config) {
         minChars:   config.minChars   || 3,
         suggestUrl: config.suggestUrl || '',
         open:       false,
-        items:      [],
+        data:       { categories: [], publishers: [], products: [] },
         _query:     '',
 
         init() {
+            // Bail out if this instance lives in a CSS-hidden container.
+            // Both #carusel-search-desktop and #carusel-search-mobile are always
+            // in the DOM; the media query in header.phtml sets display:none on
+            // whichever container doesn't match the current breakpoint.
+            // getComputedStyle reads the actual computed value including media queries,
+            // so this guard is always in sync with what the user actually sees.
+            const container = this.$el.closest('#carusel-search-desktop, #carusel-search-mobile');
+            if (!container || getComputedStyle(container).display === 'none') {
+                container && container.setAttribute('aria-hidden', 'true');
+                return;
+            }
+            container.removeAttribute('aria-hidden');
+
+            // Create overlay as a direct <body> child — outside any stacking context.
+            // Exactly one instance passes the guard per viewport, so one overlay total.
+            this._overlay = document.createElement('div');
+            Object.assign(this._overlay.style, {
+                position: 'fixed', inset: '0',
+                background: 'rgba(0,0,0,0.5)', zIndex: '25', display: 'none'
+            });
+            this._overlay.addEventListener('click', () => this.close());
+            document.body.appendChild(this._overlay);
+
+            this.$watch('open', value => {
+                document.body.style.overflow = value ? 'hidden' : '';
+                this._overlay.style.display  = value ? 'block' : 'none';
+            });
+
             // If the search input is rendered outside this component (theme-level),
             // attach the listener to it directly.
-            const externalInput = document.getElementById('search');
+            const externalInput = document.getElementById(config.inputId || 'search');
             if (externalInput && !this.$el.contains(externalInput)) {
                 let timer;
                 externalInput.addEventListener('input', (e) => {
@@ -113,10 +206,11 @@ function slovaAutocomplete(config) {
                 );
                 if (!res.ok) throw new Error('network');
                 const data = await res.json();
-                // discard stale responses
                 if (query === this._query) {
-                    this.items = Array.isArray(data) ? data : [];
-                    this.open  = this.items.length > 0;
+                    this.data = data;
+                    this.open = (this.data.categories?.length > 0) ||
+                                (this.data.publishers?.length > 0) ||
+                                (this.data.products?.length > 0);
                 }
             } catch {
                 this.close();
@@ -124,8 +218,8 @@ function slovaAutocomplete(config) {
         },
 
         close() {
-            this.open  = false;
-            this.items = [];
+            this.open = false;
+            this.data = { categories: [], publishers: [], products: [] };
         }
     };
 }
