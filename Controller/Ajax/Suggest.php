@@ -13,6 +13,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Slova\Core\Model\BundlePrice;
 use Slova\Discovery\Model\Config;
 use Smile\ElasticsuiteCatalog\Model\ResourceModel\Product\Fulltext\CollectionFactory;
 use Smile\ElasticsuiteCore\Search\Request\Query\QueryFactory;
@@ -31,6 +32,7 @@ class Suggest implements HttpGetActionInterface
         private readonly StoreManagerInterface     $storeManager,
         private readonly CategoryCollectionFactory $categoryCollectionFactory,
         private readonly ResourceConnection        $resourceConnection,
+        private readonly BundlePrice               $bundlePrice,
     ) {
     }
 
@@ -228,23 +230,10 @@ class Suggest implements HttpGetActionInterface
             }
 
             if ($this->config->showPrice()) {
-                if ($product->getTypeId() === 'bundle') {
-                    $bInst = $product->getTypeInstance();
-                    $bInst->setStoreFilter($product->getStoreId(), $product);
-                    $bSels = $bInst->getSelectionsCollection($bInst->getOptionsIds($product), $product);
-                    $finalPrice = 0.0; $regularPrice = 0.0;
-                    foreach ($bSels as $bSel) {
-                        $bQty = (float)($bSel->getSelectionQty() ?: 1);
-                        $finalPrice   += (float)$bSel->getSelectionPriceValue() * $bQty;
-                        $regularPrice += (float)$bSel->getPrice() * $bQty;
-                    }
-                } else {
-                    $finalPrice   = (float) $product->getFinalPrice();
-                    $regularPrice = (float) $product->getPrice();
-                }
-                $item['price'] = $this->priceHelper->currency($finalPrice, false, false);
-                if ($regularPrice > $finalPrice) {
-                    $item['regular_price'] = $this->priceHelper->currency($regularPrice, false, false);
+                $prices = $this->bundlePrice->getPrices($product);
+                $item['price'] = $this->priceHelper->currency($prices['final'], false, false);
+                if ($prices['regular'] > $prices['final']) {
+                    $item['regular_price'] = $this->priceHelper->currency($prices['regular'], false, false);
                 }
             }
 
