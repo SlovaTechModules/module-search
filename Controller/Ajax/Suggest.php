@@ -228,8 +228,20 @@ class Suggest implements HttpGetActionInterface
             }
 
             if ($this->config->showPrice()) {
-                $finalPrice   = (float) $product->getFinalPrice();
-                $regularPrice = (float) $product->getPrice();
+                if ($product->getTypeId() === 'bundle') {
+                    $bInst = $product->getTypeInstance();
+                    $bInst->setStoreFilter($product->getStoreId(), $product);
+                    $bSels = $bInst->getSelectionsCollection($bInst->getOptionsIds($product), $product);
+                    $finalPrice = 0.0; $regularPrice = 0.0;
+                    foreach ($bSels as $bSel) {
+                        $bQty = (float)($bSel->getSelectionQty() ?: 1);
+                        $finalPrice   += (float)$bSel->getSelectionPriceValue() * $bQty;
+                        $regularPrice += (float)$bSel->getPrice() * $bQty;
+                    }
+                } else {
+                    $finalPrice   = (float) $product->getFinalPrice();
+                    $regularPrice = (float) $product->getPrice();
+                }
                 $item['price'] = $this->priceHelper->currency($finalPrice, false, false);
                 if ($regularPrice > $finalPrice) {
                     $item['regular_price'] = $this->priceHelper->currency($regularPrice, false, false);
