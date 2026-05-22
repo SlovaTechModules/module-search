@@ -97,8 +97,114 @@ $autocompleteId = 'search_autocomplete';
             </div>
         </template>
 
-        <!-- Produse -->
-        <template x-for="(item, index) in data.products" :key="index">
+        <!-- Primele 2 produse -->
+        <template x-for="(item, index) in data.products.slice(0, 2)" :key="'p1-' + item.id">
+            <a
+                :href="item.url"
+                role="option"
+                style="display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0.75rem; border-bottom:1px solid #f3f4f6; text-decoration:none; color:inherit; cursor:pointer;"
+                onmouseover="this.style.background='#f9fafb'"
+                onmouseout="this.style.background=''"
+            >
+                <template x-if="item.thumbnail">
+                    <img
+                        :src="item.thumbnail"
+                        :alt="item.name"
+                        style="width:44px; height:44px; object-fit:contain; flex-shrink:0;"
+                        loading="lazy"
+                    />
+                </template>
+
+                <div style="flex:1; min-width:0;">
+                    <div
+                        x-text="item.name"
+                        style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                    ></div>
+
+                    <template x-if="item.authors">
+                        <div x-text="item.authors" style="font-size:12px; color:#6b7280; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+                    </template>
+
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                        <template x-if="item.regular_price && item.regular_price > item.price">
+                            <span x-text="item.regular_price.toFixed(2) + ' RON'" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
+                        </template>
+                        <template x-if="item.price">
+                            <span x-text="item.price.toFixed(2) + ' RON'" style="font-size:13px; font-weight:600; color:#009999;"></span>
+                        </template>
+                    </div>
+                </div>
+            </a>
+        </template>
+
+        <!-- Autori — după a doua carte -->
+        <template x-if="data.authors && data.authors.primary">
+            <div style="padding:0.5rem 0.75rem; border-bottom:1px solid #f3f4f6; position:relative;">
+                <div style="display:flex; align-items:center; gap:0.5rem; overflow-x:auto; flex-wrap:nowrap; scrollbar-width:none; padding-right:28px;">
+
+                    <!-- Avatar + nume principal -->
+                    <a :href="data.authors.primary.url"
+                       style="display:flex; align-items:center; gap:0.4rem; text-decoration:none; flex-shrink:0;"
+                       onmouseover="this.querySelector('span.author-name') && (this.querySelector('span.author-name').style.color='#009999')"
+                       onmouseout="this.querySelector('span.author-name') && (this.querySelector('span.author-name').style.color='#111e1e')">
+                        <template x-if="data.authors.primary.image">
+                            <img
+                                :src="data.authors.primary.image"
+                                :alt="data.authors.primary.name"
+                                style="width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0;"
+                            />
+                        </template>
+                        <template x-if="!data.authors.primary.image">
+                            <div
+                                :style="'width:32px; height:32px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:' + authorAvatarColor(data.authors.primary.name)"
+                                aria-hidden="true"
+                            >
+                                <span
+                                    x-text="authorInitials(data.authors.primary.name)"
+                                    style="color:#fff; font-weight:700; font-size:12px; letter-spacing:0.03em;"
+                                ></span>
+                            </div>
+                        </template>
+                        <span
+                            class="author-name"
+                            x-text="data.authors.primary.name"
+                            style="font-weight:600; color:#111e1e; font-size:13px; white-space:nowrap; transition:color 0.15s;"
+                        ></span>
+                    </a>
+
+                    <!-- Pipe + pills autori secundari -->
+                    <template x-if="data.authors.secondary && data.authors.secondary.length > 0">
+                        <div style="display:flex; align-items:center; gap:0.375rem; flex-shrink:0;">
+                            <span style="color:#006666; margin:0 2px;">|</span>
+                            <template x-for="(author, ai) in data.authors.secondary" :key="ai">
+                                <a
+                                    :href="author.url"
+                                    x-text="author.name"
+                                    style="display:inline-block; border:1px solid #009999; color:#009999; border-radius:9999px; font-size:12px; padding:2px 10px; text-decoration:none; white-space:nowrap;"
+                                    onmouseover="this.style.background='#e6f7f7'"
+                                    onmouseout="this.style.background=''"
+                                ></a>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- "și alți N →" -->
+                    <template x-if="data.authors.others_count > 0">
+                        <a
+                            :href="data.authors.search_url"
+                            x-text="'și alți ' + data.authors.others_count + ' autori →'"
+                            style="font-size:12px; color:#6b7280; text-decoration:none; white-space:nowrap; flex-shrink:0;"
+                            onmouseover="this.style.color='#009999'"
+                            onmouseout="this.style.color='#6b7280'"
+                        ></a>
+                    </template>
+                </div>
+                <div style="position:absolute; right:0.75rem; top:0; width:40px; height:100%; background:linear-gradient(to right, transparent, white); pointer-events:none;"></div>
+            </div>
+        </template>
+
+        <!-- Produsele 3+ -->
+        <template x-for="(item, index) in data.products.slice(2)" :key="'p2-' + item.id">
             <a
                 :href="item.url"
                 role="option"
@@ -140,12 +246,27 @@ $autocompleteId = 'search_autocomplete';
 </div>
 
 <script>
+function authorAvatarColor(name) {
+    const palette = ['#009999','#FF5533','#E8A020','#5A7070','#006666','#CC4422','#8AACAC','#1e3333'];
+    const code = (name || ' ').toLowerCase().charCodeAt(0);
+    return palette[code % palette.length];
+}
+
+function authorInitials(name) {
+    const parts = (name || '').trim().split(/\s+/);
+    let init = (parts[0] || '').charAt(0).toUpperCase();
+    if (parts.length > 1) {
+        init += (parts[parts.length - 1] || '').charAt(0).toUpperCase();
+    }
+    return init;
+}
+
 function slovaAutocomplete(config) {
     return {
         minChars:   config.minChars   || 3,
         suggestUrl: config.suggestUrl || '',
         open:       false,
-        data:       { categories: [], publishers: [], products: [] },
+        data:       { categories: [], publishers: [], authors: null, products: [] },
         _query:     '',
 
         init() {
@@ -210,6 +331,7 @@ function slovaAutocomplete(config) {
                     this.data = data;
                     this.open = (this.data.categories?.length > 0) ||
                                 (this.data.publishers?.length > 0) ||
+                                (this.data.authors?.primary != null) ||
                                 (this.data.products?.length > 0);
                 }
             } catch {
@@ -219,7 +341,7 @@ function slovaAutocomplete(config) {
 
         close() {
             this.open = false;
-            this.data = { categories: [], publishers: [], products: [] };
+            this.data = { categories: [], publishers: [], authors: null, products: [] };
         }
     };
 }
