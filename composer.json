@@ -1,5 +1,5 @@
 {
-    "name": "slova/module-search",
+    "name": "slova/module-discovery",
     "description": "Advanced search autocomplete with thumbnails for Magento 2",
     "type": "magento2-module",
     "version": "1.0.0",
@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Slova\\Search\\": ""
+            "Slova\\Discovery\\": ""
         }
     }
 }

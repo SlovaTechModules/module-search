@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Slova\Search\Block;
+namespace Slova\Discovery\Block;
 
 use Magento\Framework\View\Element\Template;
-use Slova\Search\Model\Config;
+use Slova\Discovery\Model\Config;
 
 class Autocomplete extends Template
 {
@@ -29,6 +29,6 @@ class Autocomplete extends Template
 
     public function getSuggestUrl(): string
     {
-        return $this->getUrl('slova_search/ajax/suggest');
+        return $this->getUrl('slova_discovery/ajax/suggest');
     }
 }

@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <slova_search>
+        <slova_discovery>
             <general>
                 <enabled>1</enabled>
             </general>
@@ -17,6 +17,6 @@
                 <edge_ngram_min>2</edge_ngram_min>
                 <edge_ngram_max>20</edge_ngram_max>
             </opensearch>
-        </slova_search>
+        </slova_discovery>
     </default>
 </config>

@@ -3,5 +3,5 @@
  * view/frontend/templates/autocomplete.phtml.
  *
  * Acest fișier poate fi șters dacă nu mai există referințe require/x-magento-init
- * spre Slova_Search/js/autocomplete în codebase.
+ * spre Slova_Discovery/js/autocomplete în codebase.
  */

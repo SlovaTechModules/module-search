@@ -3,9 +3,9 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Slova\Search\Block\Autocomplete"
-                   name="slova_search.autocomplete"
-                   template="Slova_Search::autocomplete.phtml"/>
+            <block class="Slova\Discovery\Block\Autocomplete"
+                   name="slova_discovery.autocomplete"
+                   template="Slova_Discovery::autocomplete.phtml"/>
         </referenceContainer>
     </body>
 </page>

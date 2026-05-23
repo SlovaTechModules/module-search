@@ -2,8 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
-        <route id="slova_search" frontName="slova_search">
-            <module name="Slova_Search"/>
+        <route id="slova_discovery" frontName="slova_discovery">
+            <module name="Slova_Discovery"/>
         </route>
     </router>
 </config>

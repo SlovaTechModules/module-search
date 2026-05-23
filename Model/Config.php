@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Slova\Search\Model;
+namespace Slova\Discovery\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Config
 {
-    private const XML_PATH_ENABLED          = 'slova_search/general/enabled';
-    private const XML_PATH_MIN_CHARS        = 'slova_search/autocomplete/min_chars';
-    private const XML_PATH_MAX_RESULTS      = 'slova_search/autocomplete/max_results';
-    private const XML_PATH_SHOW_THUMBNAIL   = 'slova_search/autocomplete/show_thumbnail';
-    private const XML_PATH_SHOW_PRICE       = 'slova_search/autocomplete/show_price';
-    private const XML_PATH_SHOW_SKU         = 'slova_search/autocomplete/show_sku';
-    private const XML_PATH_EDGE_NGRAM_MIN   = 'slova_search/opensearch/edge_ngram_min';
-    private const XML_PATH_EDGE_NGRAM_MAX   = 'slova_search/opensearch/edge_ngram_max';
+    private const XML_PATH_ENABLED          = 'slova_discovery/general/enabled';
+    private const XML_PATH_MIN_CHARS        = 'slova_discovery/autocomplete/min_chars';
+    private const XML_PATH_MAX_RESULTS      = 'slova_discovery/autocomplete/max_results';
+    private const XML_PATH_SHOW_THUMBNAIL   = 'slova_discovery/autocomplete/show_thumbnail';
+    private const XML_PATH_SHOW_PRICE       = 'slova_discovery/autocomplete/show_price';
+    private const XML_PATH_SHOW_SKU         = 'slova_discovery/autocomplete/show_sku';
+    private const XML_PATH_EDGE_NGRAM_MIN   = 'slova_discovery/opensearch/edge_ngram_min';
+    private const XML_PATH_EDGE_NGRAM_MAX   = 'slova_discovery/opensearch/edge_ngram_max';
 
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
-    ) {}
+    ) {
+    }
 
     public function isEnabled(mixed $scopeCode = null): bool
     {
@@ -76,6 +77,8 @@ class Config
         );
     }
 
+    // Edge ngram settings are configured at global scope only (showInWebsite="0" showInStore="0"
+    // in system.xml), so $scopeCode is intentionally omitted here.
     public function getEdgeNgramMin(): int
     {
         return (int) $this->scopeConfig->getValue(
