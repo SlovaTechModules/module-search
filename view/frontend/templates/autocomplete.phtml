@@ -127,10 +127,10 @@ $autocompleteId = 'search_autocomplete';
 
                     <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                         <template x-if="item.regular_price && item.regular_price > item.price">
-                            <span x-text="item.regular_price.toFixed(2) + ' RON'" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
+                            <span x-text="hyva.formatPrice(item.regular_price)" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
                         </template>
                         <template x-if="item.price">
-                            <span x-text="item.price.toFixed(2) + ' RON'" style="font-size:13px; font-weight:600; color:#009999;"></span>
+                            <span x-text="hyva.formatPrice(item.price)" style="font-size:13px; font-weight:600; color:#009999;"></span>
                         </template>
                     </div>
                 </div>
@@ -233,10 +233,10 @@ $autocompleteId = 'search_autocomplete';
 
                     <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                         <template x-if="item.regular_price && item.regular_price > item.price">
-                            <span x-text="item.regular_price.toFixed(2) + ' RON'" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
+                            <span x-text="hyva.formatPrice(item.regular_price)" style="font-size:12px; color:#9ca3af; text-decoration:line-through;"></span>
                         </template>
                         <template x-if="item.price">
-                            <span x-text="item.price.toFixed(2) + ' RON'" style="font-size:13px; font-weight:600; color:#009999;"></span>
+                            <span x-text="hyva.formatPrice(item.price)" style="font-size:13px; font-weight:600; color:#009999;"></span>
                         </template>
                     </div>
                 </div>
